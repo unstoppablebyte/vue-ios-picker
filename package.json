@@ -1,0 +1,37 @@
+{
+  "name": "ios-picker",
+  "description": "A IOS picker for vue",
+  "author": "UnstopableByte",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "files": [
+    "dist/*",
+    "src/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "sass": "^1.62.1",
+    "vite": "^4.3.9"
+  },
+  "engines": {
+    "node": ">=12.0.0",
+    "npm": ">=6.0.0"
+  },
+  "keywords": [
+    "vue",
+    "picker",
+    "ios"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/unstoppablebyte/vue-ios-picker"
+}
