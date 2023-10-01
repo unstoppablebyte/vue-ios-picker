@@ -1,0 +1,148 @@
+.ios-picker {
+  font-size: 1rem;
+  height: 10em;
+  position: relative;
+  background-color: #fff;
+  overflow:hidden
+}
+
+.ios-picker .ios-list {
+  height: 6.25em;
+  position: relative;
+  top:4em
+}
+
+.ios-picker .ios-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  text-align: center;
+  will-change: transform;
+  contain: strict;
+  height: 2em;
+  line-height: 2;
+  font-size:1em
+}
+
+.ios-picker .ios-handle-layer {
+  position: absolute;
+  width: 100%;
+  height: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  top: -1px;
+  bottom:-1px
+}
+
+.ios-picker .ios-handle-layer .ios-top {
+  border-bottom: 1px solid #c8c7cc;
+  background: linear-gradient(180deg, #fff 10%, hsla(0, 0%, 100%, .7));
+  -webkit-transform: translateZ(5.625em);
+  transform:translateZ(5.625em)
+}
+
+.ios-picker .ios-handle-layer .ios-middle {
+  height:2em
+}
+
+.ios-picker .ios-handle-layer .ios-bottom {
+  border-top: 1px solid #c8c7cc;
+  background: linear-gradient(0deg, #fff 10%, hsla(0, 0%, 100%, .7));
+  -webkit-transform: translateZ(5.625em);
+  transform:translateZ(5.625em)
+}
+
+.flex-box {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:flex;
+
+  &.direction-column {
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction:column
+  }
+
+  &.direction-row {
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction:row
+  }
+
+  .flex-1 {
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex:1
+  }
+
+  .flex-2 {
+    -webkit-flex: 2;
+    -ms-flex: 2;
+    flex:2
+  }
+
+  .flex-3 {
+    -webkit-flex: 3;
+    -ms-flex: 3;
+    flex:3
+  }
+
+  .flex-4 {
+    -webkit-flex: 4;
+    -ms-flex: 4;
+    flex:4
+  }
+
+  .flex-5 {
+    -webkit-flex: 5;
+    -ms-flex: 5;
+    flex:5
+  }
+
+  .flex-6 {
+    -webkit-flex: 6;
+    -ms-flex: 6;
+    flex:6
+  }
+
+  .flex-7 {
+    -webkit-flex: 7;
+    -ms-flex: 7;
+    flex:7
+  }
+
+  .flex-8 {
+    -webkit-flex: 8;
+    -ms-flex: 8;
+    flex:8
+  }
+
+  .flex-9 {
+    -webkit-flex: 9;
+    -ms-flex: 9;
+    flex:9
+  }
+
+  .flex-10 {
+    -webkit-flex: 10;
+    -ms-flex: 10;
+    flex:10
+  }
+
+  .flex-11 {
+    -webkit-flex: 11;
+    -ms-flex: 11;
+    flex:11
+  }
+
+  .flex-12 {
+    -webkit-flex: 12;
+    -ms-flex: 12;
+    flex:12
+  }
+}
