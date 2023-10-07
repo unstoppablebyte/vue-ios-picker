@@ -1,18 +1,14 @@
-import SmoothPicker from './smooth-picker'
+import IosPicker from "@/IosPicker.vue";
 
-const install = function (Vue) {
-    if (install.installed) return
+const install = (app) => {
+    app.component(IosPicker.name, IosPicker);
+};
 
-    Vue.component(SmoothPicker.name, SmoothPicker)
-}
-
-if (typeof window !== 'undefined' && window.Vue) {
-    install(window.Vue)
-}
-
-const version = '0.4.2'
 export {
-    install as default,
-    version,
-    SmoothPicker
-}
+    IosPicker,
+    install
+};
+
+export default {
+    install
+};
