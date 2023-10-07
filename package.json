@@ -4,6 +4,8 @@
   "author": "UnstopableByte",
   "version": "1.0.0",
   "type": "module",
+  "main": "./dist/ios-picker.umd.js",
+  "module": "./dist/ios-picker.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
