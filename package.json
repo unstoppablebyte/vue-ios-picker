@@ -8,14 +8,12 @@
   "module": "./dist/ios-picker.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && npm run build-scss",
+    "preview": "vite preview",
+    "build-scss": "sass ./src/ios-picker.scss ./dist/ios-picker.css && sass ./src/ios-picker.scss ./dist/ios-picker.min.css --style=compressed"
   },
   "files": [
-    "dist/*",
-    "src/*",
-    "README.md",
-    "LICENSE"
+    "dist"
   ],
   "dependencies": {
     "vue": "^3.2.47"
