@@ -2,7 +2,7 @@
   "name": "vue3-ios-picker",
   "description": "A IOS picker for vue",
   "author": "UnstopableByte",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "./dist/ios-picker.umd.js",
   "module": "./dist/ios-picker.js",
