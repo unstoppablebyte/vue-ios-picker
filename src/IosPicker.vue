@@ -1,39 +1,54 @@
 <template>
-  <div class="ios-picker flex-box">
-    <!-- ios-group-layer -->
-    <div ref="iosGroup" v-for="(group, gIndex) in data" :key="gIndex"
-         class="ios-group" :class="getGroupClass(gIndex)">
-
+  <div class="ios-picker display-flex">
+    <div v-for="(group, gIndex) in configuration"
+         :key="gIndex"
+         :class="getGroupClass(gIndex)"
+         class="ios-group"
+         ref="iosGroup"
+    >
       <div class="ios-list">
-        <div v-if="group.divider" class="ios-item divider" :class="getItemClass(gIndex, iIndex, true)">{{ group.text }}</div>
-
-        <div v-else v-for="(item, iIndex) in group.list" :key="iIndex"
-             class="ios-item" :class="getItemClass(gIndex, iIndex)" :style="getItemStyle(gIndex, iIndex)">
-          {{ item.value || item }}
+        <div v-if="group.divider"
+             :class="getItemClass(gIndex, iIndex, true)"
+             class="ios-item divider"
+        >
+          {{ group.text }}
         </div>
+        <template v-else>
+          <div v-for="(item, iIndex) in group.list"
+               :key="iIndex"
+               :class="getItemClass(gIndex, iIndex)"
+               :style="getItemStyle(gIndex, iIndex)"
+               class="ios-item"
+          >
+            {{ item.value || item }}
+          </div>
+        </template>
       </div>
     </div>
-
-    <div ref="iosHandleLayer" class="ios-handle-layer flex-box direction-column">
-      <div data-type="top" class="ios-top flex-1"></div>
-      <div data-type="middle" class="ios-middle"></div>
-      <div data-type="bottom" class="ios-bottom flex-1"></div>
+    <div ref="iosHandleLayer" class="ios-handle-layer display-flex flex-direction-column">
+      <div data-type="top" class="ios-top flex-grow-1"/>
+      <div data-type="middle" class="ios-middle"/>
+      <div data-type="bottom" class="ios-bottom flex-grow-1"/>
     </div>
   </div>
 </template>
 
 <script>
+import IosPickerEvents from "@/IosPickerEvents.js";
+import IosPickerStyle from "@/IosPickerStyle.js";
+
 export default {
   name: 'ios-picker',
+  mixins: [
+      IosPickerEvents,
+      IosPickerStyle,
+  ],
+  emits: ['update'],
   props: {
-    data: {
+    configuration: {
       type: Array,
       default: []
     },
-    change: {
-      type: Function,
-      default: () => {}
-    }
   },
   data () {
     return {
@@ -43,7 +58,7 @@ export default {
       currentIndexList: this.getInitialCurrentIndexList(), // save groups's index
       lastCurrentIndexList: [], // for detect which group's current index if it is changed
 
-      groupsRectList: new Array(this.data.length), // save the dom rect list of this picker's groups
+      groupsRectList: new Array(this.configuration.length), // save the dom rect list of this picker's groups
 
       dragInfo: { // save drag(ing) info
         isTouchable: 'ontouchstart' in window, // for detect event belongs to touch or mouse
@@ -62,46 +77,29 @@ export default {
     }
   },
   mounted () {
-    this.eventsRegister()
+    this.eventsRegister();
 
-    this.$nextTick(this.getGroupsRectList())
-    this.supInfo.watchDomObserver = this.createDomObserver()
-    this.supInfo.watchDomObserver.observe(this.$el, { attributes: true })
+    this.$nextTick(this.getGroupsRectList);
+    this.supInfo.watchDomObserver = this.createDomObserver();
+    this.supInfo.watchDomObserver.observe(this.$el, { attributes: true });
 
-    window.addEventListener('resize', this.safeGetGroupRectList)
+    window.addEventListener('resize', this.safeGetGroupRectList);
   },
   destroyed () {
-    this.supInfo.watchDomObserver.disconnect()
+    this.supInfo.watchDomObserver.disconnect();
 
-    window.removeEventListener('resize', this.safeGetGroupRectList)
+    window.removeEventListener('resize', this.safeGetGroupRectList);
   },
   methods: {
-    setGroupData (gIndex, groupData) {
-      // for current index list
-      const iCI = groupData.currentIndex
-      let movedIndex = 0
-      if (typeof iCI === 'number' && iCI >= 0 && groupData.list && groupData.list.length && iCI <= groupData.list.length - 1) {
-        movedIndex = Math.round(iCI)
-      }
-      this.currentIndexList[gIndex] = movedIndex
-      this.lastCurrentIndexList = [].concat(this.currentIndexList)
-
-      // for detect group flex if changed
-      const gF = groupData.flex
-      if (gF && this.data[gIndex].flex !== gF) {
-        this.safeGetGroupRectList()
-      }
-
-      // set group data
-      this.data[gIndex] = groupData;
-    },
     getInitialCurrentIndexList () {
-      return this.data.map((item, index) => {
-        const iCI = item.currentIndex
+      return this.configuration.map((item) => {
+        const iCI = item.currentIndex;
+
         if (typeof iCI === 'number' && iCI >= 0 && item.list && item.list.length && iCI <= item.list.length - 1) {
-          return Math.round(iCI)
+          return Math.round(iCI);
         }
-        return 0
+
+        return 0;
       })
     },
     createDomObserver () {
@@ -112,7 +110,7 @@ export default {
             const elDisplay = this.$el.style.display
             if (elDisplay !== 'none' && this.supInfo.lastStyleDisplay !== elDisplay) {
               this.supInfo.lastStyleDisplay = elDisplay
-              this.$nextTick(this.getGroupsRectList())
+              this.$nextTick(this.getGroupsRectList)
             }
           }
         })
@@ -125,50 +123,13 @@ export default {
       }, 200)
     },
     getGroupsRectList () {
-      if (this.$refs.iosGroup) {
-        this.$refs.iosGroup.forEach((item, index) => {
-          this.groupsRectList[index] = item.getBoundingClientRect()
-        })
+      if(!this.$refs.iosGroup) {
+        return;
       }
-    },
-    eventsRegister () {
-      const handleEventLayer = this.$refs.iosHandleLayer
-      if (handleEventLayer) {
-        this.addEventsForElement(handleEventLayer)
-      }
-    },
-    addEventsForElement (el) {
-      const _ = this.dragInfo.isTouchable
-      const eventHandlerList = [
-        { name: _ ? 'touchstart' : 'mousedown', handler: this.handleStart },
-        { name: _ ? 'touchmove' : 'mousemove', handler: this.handleMove },
-        { name: _ ? 'touchend' : 'mouseup', handler: this.handleEnd },
-        { name: _ ? 'touchcancel' : 'mouseleave', handler: this.handleCancel }
-      ]
-      eventHandlerList.forEach((item, index) => {
-        el.removeEventListener(item.name, item.handler, false)
-        el.addEventListener(item.name, item.handler, false)
-      })
-    },
-    triggerMiddleLayerGroupClick (gIndex) {
-      const data = this.data
-      if (typeof gIndex === 'number' && typeof data[gIndex].onClick === 'function') {
-        data[gIndex].onClick(gIndex, this.currentIndexList[gIndex])
-      }
-    },
-    triggerAboveLayerClick (ev, gIndex) {
-      this.currentIndexList[gIndex] = this.currentIndexList[gIndex] + 1;
-      this.correctionCurrentIndex(ev, gIndex)
-    },
-    triggerMiddleLayerClick (ev, gIndex) {
-      this.triggerMiddleLayerGroupClick(gIndex)
-    },
-    triggerBelowLayerClick (ev, gIndex) {
-      this.currentIndexList[gIndex] = this.currentIndexList[gIndex] - 1;
-      this.correctionCurrentIndex(ev, gIndex)
-    },
-    getTouchInfo (ev) {
-      return this.dragInfo.isTouchable ? ev.changedTouches[0] || ev.touches[0] : ev
+
+      this.$refs.iosGroup.forEach((item, index) => {
+        this.groupsRectList[index] = item.getBoundingClientRect();
+      });
     },
     getGroupIndexBelongsEvent (ev) {
       const touchInfo = this.getTouchInfo(ev)
@@ -181,71 +142,6 @@ export default {
       }
       return null
     },
-    handleEventClick (ev) {
-      const gIndex = this.getGroupIndexBelongsEvent(ev)
-
-      switch (ev.target.dataset.type) {
-        case 'top':
-          this.triggerAboveLayerClick(ev, gIndex)
-          break
-        case 'middle':
-          this.triggerMiddleLayerClick(ev, gIndex)
-          break
-        case 'bottom':
-          this.triggerBelowLayerClick(ev, gIndex)
-          break
-        default:
-      }
-    },
-    handleStart (ev) {
-      if (ev.cancelable) {
-        ev.preventDefault()
-        ev.stopPropagation()
-      }
-
-      const touchInfo = this.getTouchInfo(ev)
-      this.dragInfo.startPageY = touchInfo.pageY
-      if (!this.dragInfo.isTouchable) {
-        this.dragInfo.isMouseDown = true
-      }
-    },
-    handleMove (ev) {
-      if (ev.cancelable) {
-        ev.preventDefault()
-        ev.stopPropagation()
-      }
-
-      if (this.dragInfo.isTouchable || this.dragInfo.isMouseDown) {
-        this.dragInfo.isDragging = true
-        this.setCurrentIndexOnMove(ev)
-      }
-    },
-    handleEnd (ev) {
-      if (ev.cancelable) {
-        ev.preventDefault()
-        ev.stopPropagation()
-      }
-
-      if (!this.dragInfo.isDragging) {
-        this.handleEventClick(ev)
-      }
-      this.dragInfo.isDragging = false
-      this.dragInfo.isMouseDown = false
-
-      this.correctionAfterDragging(ev)
-    },
-    handleCancel (ev) {
-      if (ev.cancelable) {
-        ev.preventDefault()
-        ev.stopPropagation()
-      }
-
-      if (this.dragInfo.isTouchable || this.dragInfo.isMouseDown) {
-        this.correctionAfterDragging(ev)
-        this.dragInfo.isMouseDown = false
-        this.dragInfo.isDragging = false
-      }
-    },
     setCurrentIndexOnMove (ev) {
       const touchInfo = this.getTouchInfo(ev)
       if (this.dragInfo.groupIndex === null) {
@@ -253,88 +149,48 @@ export default {
       }
 
       const gIndex = this.dragInfo.groupIndex
-      if (typeof gIndex === 'number' && (this.data[gIndex].divider || !this.data[gIndex].list)) {
+      if (typeof gIndex === 'number' && (this.configuration[gIndex].divider || !this.configuration[gIndex].list)) {
         return
       }
 
       const moveCount = (this.dragInfo.startPageY - touchInfo.pageY) / 32
-      const movedIndex = this.currentIndexList[gIndex] + moveCount
-
-      this.currentIndexList[gIndex] = movedIndex;
+      this.currentIndexList[gIndex] = this.currentIndexList[gIndex] + moveCount;
 
       this.dragInfo.startPageY = touchInfo.pageY
     },
     correctionAfterDragging (ev) {
-      const gIndex = this.dragInfo.groupIndex
-      this.correctionCurrentIndex(ev, gIndex)
+      const gIndex = this.dragInfo.groupIndex;
+      this.correctionCurrentIndex(ev, gIndex);
 
-      this.dragInfo.groupIndex = null
-      this.dragInfo.startPageY = null
+      this.dragInfo.groupIndex = null;
+      this.dragInfo.startPageY = null;
     },
     correctionCurrentIndex (ev, gIndex) {
       setTimeout(() => {
-        if (typeof gIndex === 'number' && this.data[gIndex].divider !== true && this.data[gIndex].list.length > 0) {
+        if (typeof gIndex === 'number' && this.configuration[gIndex].divider !== true && this.configuration[gIndex].list.length > 0) {
           const unsafeGroupIndex = this.currentIndexList[gIndex]
 
           let movedIndex = unsafeGroupIndex
-          if (unsafeGroupIndex > this.data[gIndex].list.length - 1) {
-            movedIndex = this.data[gIndex].list.length - 1
+          if (unsafeGroupIndex > this.configuration[gIndex].list.length - 1) {
+            movedIndex = this.configuration[gIndex].list.length - 1
           } else if (unsafeGroupIndex < 0) {
             movedIndex = 0
           }
           movedIndex = Math.round(movedIndex)
 
-          this.currentIndexList[gIndex] = movedIndex;
+          this.currentIndexList[gIndex] = movedIndex
 
           if (movedIndex !== this.lastCurrentIndexList[gIndex]) {
-            this.change(gIndex, movedIndex)
+            this.$emit('update', gIndex, movedIndex, this.configuration[gIndex].list[movedIndex]);
           }
 
-          this.lastCurrentIndexList = [].concat(this.currentIndexList)
+          this.lastCurrentIndexList = [].concat(this.currentIndexList);
         }
-      }, 100)
+      }, 100);
     },
     isCurrentItem (gIndex, iIndex) {
-      return this.currentIndexList[gIndex] === iIndex
+      return this.currentIndexList[gIndex] === iIndex;
     },
-    getCurrentIndexList () {
-      return this.currentIndexList
-    },
-    getGroupClass (gIndex) {
-      const group = this.data[gIndex]
-      const defaultFlexClass = 'flex-' + (group.flex || 1)
-      const groupClass = [defaultFlexClass]
-      if (group.className) {
-        groupClass.push(group.className)
-      }
-      return groupClass
-    },
-    getItemClass (gIndex, iIndex, isDevider = false) {
-      const itemClass = []
-      const group = this.data[gIndex]
-      if (group.textAlign) {
-        itemClass.push('text-' + group.textAlign)
-      }
-      if (!isDevider && this.isCurrentItem(gIndex, iIndex)) {
-        itemClass.push('ios-item-selected')
-      }
-      return itemClass
-    },
-    getItemStyle (gIndex, iIndex) {
-      const gapCount = this.currentIndexList[gIndex] - iIndex
-      if (Math.abs(gapCount) < 4) {
-        let rotateStyle = 'transform: rotateX(' + gapCount * 23 + 'deg) translate3d(0, 0, 5.625em);'
-        if (!this.dragInfo.isDragging) {
-          rotateStyle += ' transition: transform 150ms ease-out;'
-        }
-        return rotateStyle
-      }
-      if (gapCount > 0) {
-        return 'transform: rotateX(100deg) translate3d(0, 0, 5.625em)'
-      } else {
-        return 'transform: rotateX(-100deg) translate3d(0, 0, 5.625em)'
-      }
-    }
   }
 }
 </script>
