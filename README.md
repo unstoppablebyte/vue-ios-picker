@@ -1,9 +1,12 @@
 # vue3-ios-picker
 A Ios style picker for Vue 3.
 
+[![GitHub version](https://badge.fury.io/gh/unstoppablebyte%2Fvue-ios-picker.svg)](https://badge.fury.io/gh/unstoppablebyte%2Fvue-ios-picker)
+![NPM License](https://img.shields.io/npm/l/vue3-ios-picker)
+![npm bundle size](https://img.shields.io/bundlephobia/min/vue3-ios-picker)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/vue3-ios-picker)
 [![NPM downloads](http://img.shields.io/npm/dt/vue3-ios-picker.svg)](https://npmjs.org/package/vue3-ios-picker)
-![JS gzip size](http://img.badgesize.io/unstoppablebyte/vue-ios-picker/dist/iso-picker.js.svg?compression=gzip&label=gzip:%20JS)
-![CSS gzip size](http://img.badgesize.io/unstoppablebyte/vue-ios-picker/dist/css/ios-picker.css.svg?compression=gzip&label=gzip:%20CSS)
+[![Twitter](https://img.shields.io/twitter/follow/UnstoppableByte.svg?style=social&label=@UnstoppableByte)](https://twitter.com/UnstoppableByte)
 
 [![NPM Description](https://nodei.co/npm/vue3-ios-picker.png?downloads=true&stars=true)](https://npmjs.org/package/vue3-ios-picker)
 
