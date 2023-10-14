@@ -1,4 +1,4 @@
-import { openBlock as n, createElementBlock as o, Fragment as g, renderList as f, normalizeClass as h, createElementVNode as l, toDisplayString as p, normalizeStyle as I } from "vue";
+import { openBlock as r, createElementBlock as o, Fragment as g, renderList as f, normalizeClass as h, createElementVNode as l, toDisplayString as p, normalizeStyle as I } from "vue";
 const y = {
   methods: {
     eventsRegister() {
@@ -76,8 +76,8 @@ const y = {
       ] : s.push(e.className), s;
     },
     getItemClass(t, e, s = !1) {
-      const i = [], r = this.configuration[t];
-      return r.textAlign && i.push("ios-text-align-" + r.textAlign), !s && this.isCurrentItem(t, e) && i.push("ios-item-selected"), i;
+      const i = [], n = this.configuration[t];
+      return n.textAlign && i.push("ios-text-align-" + n.textAlign), !s && this.isCurrentItem(t, e) && i.push("ios-item-selected"), i;
     },
     getItemStyle(t, e) {
       const s = this.currentIndexList[t] - e;
@@ -90,8 +90,8 @@ const y = {
   }
 }, C = (t, e) => {
   const s = t.__vccOpts || t;
-  for (const [i, r] of e)
-    s[i] = r;
+  for (const [i, n] of e)
+    s[i] = n;
   return s;
 }, v = {
   name: "ios-picker",
@@ -108,7 +108,7 @@ const y = {
   },
   data() {
     return {
-      gIndex: 0,
+      currentGroupIndex: 0,
       // for suppress vue-loader warning
       iIndex: 0,
       // for suppress vue-loader warning
@@ -157,12 +157,12 @@ const y = {
     },
     createDomObserver() {
       return new window.MutationObserver((t) => {
-        t.forEach((e) => {
-          if (e.type === "attributes") {
-            const s = this.$el.style.display;
-            s !== "none" && this.supInfo.lastStyleDisplay !== s && (this.supInfo.lastStyleDisplay = s, this.$nextTick(this.getGroupsRectList));
-          }
-        });
+        for (const e of t) {
+          if (e.type !== "attributes")
+            continue;
+          const s = this.$el.style.display;
+          s !== "none" && this.supInfo.lastStyleDisplay !== s && (this.supInfo.lastStyleDisplay = s, this.$nextTick(this.getGroupsRectList));
+        }
       });
     },
     safeGetGroupRectList() {
@@ -199,15 +199,29 @@ const y = {
     },
     correctionCurrentIndex(t, e) {
       setTimeout(() => {
-        if (typeof e == "number" && this.configuration[e].divider !== !0 && this.configuration[e].list.length > 0) {
-          const s = this.currentIndexList[e];
-          let i = s;
-          s > this.configuration[e].list.length - 1 ? i = this.configuration[e].list.length - 1 : s < 0 && (i = 0), i = Math.round(i), this.currentIndexList[e] = i, i !== this.lastCurrentIndexList[e] && this.$emit("update", e, i, this.configuration[e].list[i]), this.lastCurrentIndexList = [].concat(this.currentIndexList);
-        }
+        if (typeof e != "number" || this.configuration[e].divider || !this.configuration[e].list.length)
+          return;
+        const s = this.getMovedIndex(e);
+        this.currentIndexList[e] = s, s !== this.lastCurrentIndexList[e] && this.onUpdateEmit(e, s), this.lastCurrentIndexList = [].concat(this.currentIndexList);
       }, 100);
     },
     isCurrentItem(t, e) {
       return this.currentIndexList[t] === e;
+    },
+    getMovedIndex(t) {
+      const e = this.currentIndexList[t];
+      let s = e;
+      return e < 0 && (s = 0), e > this.configuration[t].list.length - 1 && (s = this.configuration[t].list.length - 1), Math.round(s);
+    },
+    onUpdateEmit(t, e) {
+      const s = this.configuration;
+      s[t].currentIndex = e, this.$emit(
+        "update",
+        t,
+        e,
+        this.configuration[t].list[e],
+        s
+      );
     }
   }
 }, b = { class: "ios-picker display-flex" }, x = { class: "ios-list" }, k = {
@@ -219,43 +233,43 @@ const y = {
 }, null, -1), w = /* @__PURE__ */ l("div", {
   "data-type": "middle",
   class: "ios-middle"
-}, null, -1), _ = /* @__PURE__ */ l("div", {
+}, null, -1), E = /* @__PURE__ */ l("div", {
   "data-type": "bottom",
   class: "ios-bottom flex-grow-1"
-}, null, -1), E = [
+}, null, -1), _ = [
   D,
   w,
-  _
+  E
 ];
-function G(t, e, s, i, r, M) {
-  return n(), o("div", b, [
-    (n(!0), o(g, null, f(s.configuration, (u, a) => (n(), o("div", {
+function M(t, e, s, i, n, R) {
+  return r(), o("div", b, [
+    (r(!0), o(g, null, f(s.configuration, (c, a) => (r(), o("div", {
       key: a,
       class: h([t.getGroupClass(a), "ios-group"]),
       ref_for: !0,
       ref: "iosGroup"
     }, [
       l("div", x, [
-        u.divider ? (n(), o("div", {
+        c.divider ? (r(), o("div", {
           key: 0,
-          class: h([t.getItemClass(a, r.iIndex, !0), "ios-item divider"])
-        }, p(u.text), 3)) : (n(!0), o(g, { key: 1 }, f(u.list, (d, c) => (n(), o("div", {
-          key: c,
-          class: h([t.getItemClass(a, c), "ios-item"]),
-          style: I(t.getItemStyle(a, c))
+          class: h([t.getItemClass(a, n.iIndex, !0), "ios-item divider"])
+        }, p(c.text), 3)) : (r(!0), o(g, { key: 1 }, f(c.list, (d, u) => (r(), o("div", {
+          key: u,
+          class: h([t.getItemClass(a, u), "ios-item"]),
+          style: I(t.getItemStyle(a, u))
         }, p(d.value || d), 7))), 128))
       ])
     ], 2))), 128)),
-    l("div", k, E, 512)
+    l("div", k, _, 512)
   ]);
 }
-const m = /* @__PURE__ */ C(v, [["render", G]]), T = (t) => {
+const m = /* @__PURE__ */ C(v, [["render", M]]), T = (t) => {
   t.component(m.name, m);
-}, P = {
+}, A = {
   install: T
 };
 export {
   m as IosPicker,
-  P as default,
+  A as default,
   T as install
 };
